@@ -1,0 +1,11 @@
+candidate,reps,flag_rate,mean_d_route_acc,mean_d_quality,mean_d_bad_auto,mean_violations
+"A/A (same build, new seeds)",100,0.0000,0.0000,-0.0013,0.0000,0.0000
+router retrained on 20% of data,20,0.0000,-0.0200,-0.0024,-1.0000,0.0000
+confidence threshold 0.6 -> 0.3,20,1.0000,0.0000,-0.0024,17.0000,23.0000
+gate stops checking priority,20,1.0000,0.0000,-0.0024,2.0000,3.0000
+retrieval queries subject only,20,1.0000,0.0000,-0.0281,0.0000,0.0000
+drafter temperature 0.3 -> 1.0,20,0.0000,0.0000,-0.0041,0.0000,0.0000
+retrieval index 50% stale,20,0.0000,0.0000,-0.0080,0.0000,0.0000
+label map swaps two queues,20,1.0000,-0.0950,-0.0024,0.0000,0.0000
+tokenizer stops lowercasing,20,0.0000,0.0000,-0.0026,0.0000,0.0000
+drafter drops closing sentence,20,0.0000,0.0000,-0.0065,0.0000,0.0000

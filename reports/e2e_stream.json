@@ -1,0 +1,13 @@
+{
+  "runs": 50,
+  "complete_ordered_streams": 50,
+  "ms_to_first_step": {
+    "p50": 22.402611499956038,
+    "p95": 29.97923674990943
+  },
+  "ms_to_final_step": {
+    "p50": 63.64662350006256,
+    "p95": 177.7509342002303
+  },
+  "setup": "local: uvicorn (1 worker) + Node gateway + client on one 2-core VM"
+}

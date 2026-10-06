@@ -1,0 +1,316 @@
+{
+  "data": {
+    "tickets_en": 16335,
+    "near_dup_groups": 8389,
+    "largest_group": 110
+  },
+  "routing": [
+    {
+      "split": "grouped (headline)",
+      "model": "majority",
+      "macro_f1": 0.04497153700189753,
+      "accuracy": 0.29008567931456547,
+      "n_test": 3268,
+      "C": NaN,
+      "grouped_cv_macro_f1": NaN
+    },
+    {
+      "split": "grouped (headline)",
+      "model": "keyword rules",
+      "macro_f1": 0.24704599445791015,
+      "accuracy": 0.3179314565483476,
+      "n_test": 3268,
+      "C": NaN,
+      "grouped_cv_macro_f1": NaN
+    },
+    {
+      "split": "grouped (headline)",
+      "model": "TF-IDF + logistic regression",
+      "macro_f1": 0.29986075780258103,
+      "accuracy": 0.3332313341493268,
+      "n_test": 3268,
+      "C": 1.0,
+      "grouped_cv_macro_f1": 0.29870501040550523
+    },
+    {
+      "split": "random (leaky, comparison only)",
+      "model": "majority",
+      "macro_f1": 0.044945420028476506,
+      "accuracy": 0.2898683807774717,
+      "n_test": 3267,
+      "C": NaN,
+      "grouped_cv_macro_f1": NaN
+    },
+    {
+      "split": "random (leaky, comparison only)",
+      "model": "keyword rules",
+      "macro_f1": 0.23851271841507313,
+      "accuracy": 0.31833486378940923,
+      "n_test": 3267,
+      "C": NaN,
+      "grouped_cv_macro_f1": NaN
+    },
+    {
+      "split": "random (leaky, comparison only)",
+      "model": "TF-IDF + logistic regression",
+      "macro_f1": 0.6450909818932022,
+      "accuracy": 0.6219773492500765,
+      "n_test": 3267,
+      "C": 3.0,
+      "grouped_cv_macro_f1": 0.3044985772058339
+    }
+  ],
+  "models": {
+    "router": {
+      "C": 1.0,
+      "cv_macro_f1": 0.29870501040550523
+    },
+    "priority": {
+      "C": 1.0,
+      "cv_macro_f1": 0.4298274860609655
+    }
+  },
+  "retrieval": {
+    "top1_answer_sim": 0.13498149981558913,
+    "random_answer_sim": 0.04291613204611511,
+    "same_queue_random_sim": 0.04464479952853921,
+    "n": 3268
+  },
+  "e2e": {
+    "n": 1000,
+    "decisions": {
+      "needs_approval": 975,
+      "auto_send": 25
+    },
+    "auto_send_rate": 0.025,
+    "auto_send_route_accuracy": 0.96,
+    "overall_route_accuracy": 0.334,
+    "true_high_priority_auto_sent": 10,
+    "bad_auto_sends": 10,
+    "policy_violations": 0,
+    "draft_quality_mean": 0.12334953504579152,
+    "trace_reconstruct_rate": 1.0,
+    "latency_ms": {
+      "classify": {
+        "p50": 1.7468300000018644,
+        "p95": 2.55836170006205
+      },
+      "draft": {
+        "p50": 0.11414999994485697,
+        "p95": 0.17145780004739206
+      },
+      "gate": {
+        "p50": 0.003717500021593878,
+        "p95": 0.00536540010216413
+      },
+      "retrieve": {
+        "p50": 0.014490500007013907,
+        "p95": 0.020116000087000426
+      }
+    }
+  },
+  "faults": [
+    {
+      "guards": true,
+      "fault": "tool_timeout",
+      "n": 300,
+      "detected": 1.0,
+      "escalated": 1.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": true,
+      "fault": "stale_schema",
+      "n": 300,
+      "detected": 1.0,
+      "escalated": 1.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": true,
+      "fault": "malformed_tool_output",
+      "n": 300,
+      "detected": 1.0,
+      "escalated": 1.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": true,
+      "fault": "empty_retrieval",
+      "n": 300,
+      "detected": 1.0,
+      "escalated": 1.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": true,
+      "fault": "llm_refusal",
+      "n": 300,
+      "detected": 1.0,
+      "escalated": 1.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": false,
+      "fault": "tool_timeout",
+      "n": 300,
+      "detected": 0.0,
+      "escalated": 0.0,
+      "crashed": 1.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": false,
+      "fault": "stale_schema",
+      "n": 300,
+      "detected": 0.0,
+      "escalated": 0.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 11,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": false,
+      "fault": "malformed_tool_output",
+      "n": 300,
+      "detected": 0.0,
+      "escalated": 0.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": false,
+      "fault": "empty_retrieval",
+      "n": 300,
+      "detected": 0.0,
+      "escalated": 0.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 0,
+      "trace_reconstructed": 1.0
+    },
+    {
+      "guards": false,
+      "fault": "llm_refusal",
+      "n": 300,
+      "detected": 0.0,
+      "escalated": 0.0,
+      "crashed": 0.0,
+      "auto_sent_while_faulty": 11,
+      "trace_reconstructed": 1.0
+    }
+  ],
+  "replay": {
+    "n_recorded_runs": 200,
+    "aa_false_alarm_rate": 0.0,
+    "aa_reps": 100,
+    "regression_reps": 20,
+    "detection_rate_mean": 0.4444444444444444,
+    "regressions_caught_majority": 4,
+    "n_regressions": 9,
+    "table": [
+      {
+        "candidate": "A/A (same build, new seeds)",
+        "reps": 100,
+        "flag_rate": 0.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.0013125360956715677,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "router retrained on 20% of data",
+        "reps": 20,
+        "flag_rate": 0.0,
+        "mean_d_route_acc": -0.019999999999999962,
+        "mean_d_quality": -0.0024209486414349174,
+        "mean_d_bad_auto": -1.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "confidence threshold 0.6 -> 0.3",
+        "reps": 20,
+        "flag_rate": 1.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.0024209486414349174,
+        "mean_d_bad_auto": 17.0,
+        "mean_violations": 23.0
+      },
+      {
+        "candidate": "gate stops checking priority",
+        "reps": 20,
+        "flag_rate": 1.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.0024209486414349174,
+        "mean_d_bad_auto": 2.0,
+        "mean_violations": 3.0
+      },
+      {
+        "candidate": "retrieval queries subject only",
+        "reps": 20,
+        "flag_rate": 1.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.028102942757006717,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "drafter temperature 0.3 -> 1.0",
+        "reps": 20,
+        "flag_rate": 0.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.0041405271864527375,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "retrieval index 50% stale",
+        "reps": 20,
+        "flag_rate": 0.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.008008687342644441,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "label map swaps two queues",
+        "reps": 20,
+        "flag_rate": 1.0,
+        "mean_d_route_acc": -0.09499999999999997,
+        "mean_d_quality": -0.0024209486414349174,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "tokenizer stops lowercasing",
+        "reps": 20,
+        "flag_rate": 0.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.002570582437973518,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      },
+      {
+        "candidate": "drafter drops closing sentence",
+        "reps": 20,
+        "flag_rate": 0.0,
+        "mean_d_route_acc": 0.0,
+        "mean_d_quality": -0.006522232480495206,
+        "mean_d_bad_auto": 0.0,
+        "mean_violations": 0.0
+      }
+    ]
+  },
+  "runtime_s": 926.644809961319
+}

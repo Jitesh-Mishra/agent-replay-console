@@ -1,0 +1,25 @@
+claims:
+  - claim: "16,335 English tickets; grouped split by 8,389 paraphrase families"
+    evidence: [reports/results.json, arc/components.py]
+    verified: true
+  - claim: "Routing macro-F1 0.300 grouped (vs 0.247 keyword, 0.045 majority); 0.645 on leaky random split"
+    evidence: [reports/routing.csv]
+    verified: true
+  - claim: "Gate on 1,000 clean tickets: 2.5% auto-sent at 96% routing accuracy; 0 policy violations; 100% trace reconstruction; 10 true high-priority auto-sent"
+    evidence: [reports/results.json]
+    verified: true
+  - claim: "Fault injection 5 x 300: guards on 1,500/1,500 escalated, 0 auto-sent; guards off 22 bad auto-sends + 300 crashes"
+    evidence: [reports/faults.csv, tests/test_agent.py]
+    verified: true
+  - claim: "Replay over 200 recorded runs: 4 of 9 regressions caught in 100% of replays, 0/100 A/A false alarms"
+    evidence: [reports/replay.csv]
+    verified: true
+  - claim: "Replay power at 1,000 runs; single-baseline offset found"
+    evidence: [reports/replay_power.csv]
+    verified: true
+  - claim: "Full-stack streaming 50/50 complete; first step p50 22 ms, final p50 64 ms (local)"
+    evidence: [reports/e2e_stream.json, scripts/e2e_stream.py]
+    verified: true
+  - claim: "LLM (Groq) drafter / LLM-as-judge / deployment"
+    evidence: []
+    verified: false

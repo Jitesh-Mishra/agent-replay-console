@@ -1,0 +1,31 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+  gateway:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: gateway } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx tsc -p tsconfig.json --noEmit
+      - run: npx vitest run
+  console:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: console } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx vitest run
+      - run: npx tsc -p tsconfig.json && npx vite build

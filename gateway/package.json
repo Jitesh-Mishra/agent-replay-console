@@ -1,0 +1,26 @@
+{
+  "name": "arc-gateway",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "eventsource-parser": "^4.1.1",
+    "graphql": "^16.14.2",
+    "graphql-yoga": "^5.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.3"
+  },
+  "overrides": {
+    "@graphql-tools/utils": "^12.0.3"
+  }
+}

@@ -1,0 +1,11 @@
+guards,fault,n,detected,escalated,crashed,auto_sent_while_faulty,trace_reconstructed
+True,tool_timeout,300,1.0000,1.0000,0.0000,0,1.0000
+True,stale_schema,300,1.0000,1.0000,0.0000,0,1.0000
+True,malformed_tool_output,300,1.0000,1.0000,0.0000,0,1.0000
+True,empty_retrieval,300,1.0000,1.0000,0.0000,0,1.0000
+True,llm_refusal,300,1.0000,1.0000,0.0000,0,1.0000
+False,tool_timeout,300,0.0000,0.0000,1.0000,0,1.0000
+False,stale_schema,300,0.0000,0.0000,0.0000,11,1.0000
+False,malformed_tool_output,300,0.0000,0.0000,0.0000,0,1.0000
+False,empty_retrieval,300,0.0000,0.0000,0.0000,0,1.0000
+False,llm_refusal,300,0.0000,0.0000,0.0000,11,1.0000

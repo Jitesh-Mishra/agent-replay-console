@@ -1,0 +1,7 @@
+split,model,macro_f1,accuracy,n_test,C,grouped_cv_macro_f1
+grouped (headline),majority,0.0450,0.2901,3268,,
+grouped (headline),keyword rules,0.2470,0.3179,3268,,
+grouped (headline),TF-IDF + logistic regression,0.2999,0.3332,3268,1.0000,0.2987
+"random (leaky, comparison only)",majority,0.0449,0.2899,3267,,
+"random (leaky, comparison only)",keyword rules,0.2385,0.3183,3267,,
+"random (leaky, comparison only)",TF-IDF + logistic regression,0.6451,0.6220,3267,3.0000,0.3045
