@@ -449,6 +449,7 @@ class Agent:
             label, fell_back = getattr(d, "last_label", "unknown"), bool(getattr(d, "last_fallback", False))
         if "llm_refusal" in ctx["faults"]:
             text = "I'm sorry, but I can't help with that request."
+            label = "injected fault: llm_refusal"      # the model's reply was overwritten, so do not credit it
         if self.v.guards:
             if fell_back:
                 flags.append("drafter_fallback")     # an offline-written draft is escalated for a human, never auto-sent

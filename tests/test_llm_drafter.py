@@ -233,3 +233,8 @@ def test_extractive_is_labelled(setup):
 def test_nothing_retrieved_has_no_drafter(setup):
     _, store, r = run_with(setup, with_fallback(FakeLLM(GOOD)), faults=["empty_retrieval"])
     assert draft_of(store, r)["drafter"].startswith("none") and r["decision"] == "escalate"
+
+
+def test_injected_refusal_is_not_credited_to_the_model(setup):
+    _, store, r = run_with(setup, with_fallback(FakeLLM(GOOD)), faults=["llm_refusal"])
+    assert draft_of(store, r)["drafter"] == "injected fault: llm_refusal" and r["decision"] == "escalate"
