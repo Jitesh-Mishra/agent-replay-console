@@ -5,3 +5,9 @@ node_modules/
 dist/
 .env
 *.sqlite
+.venv/
+.demo/
+.DS_Store
+*.log
+.env.*
+.vite/
