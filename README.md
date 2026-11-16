@@ -23,7 +23,7 @@
   <img alt="React console: ticket queue, live step trace (classify, retrieve, draft, approval gate), and approval panel holding a low-confidence reply for a human." src="docs/img/console-run-light.png">
 </picture>
 
-> **What this is and isn't.** Offline proof on a public ticket dataset (16,335 English tickets, CC BY-NC 4.0, likely synthetic). The drafter is an **offline extractive baseline** (it reuses the closest historical answers). The Groq LLM drafter is wired in but not measured yet. All latencies are from a single 2-core machine. There are no production users and no company data.
+> **What this is and isn't.** Offline proof on a public ticket dataset (16,335 English tickets, CC BY-NC 4.0, likely synthetic). The headline results above use the **offline extractive baseline** drafter (it reuses the closest historical answers). A Groq LLM drafter is now wired in and measured on 50 tickets (see [LLM drafter](#llm-drafter)); that is a small, single-pass check, not an LLM quality evaluation. The non-LLM latencies are from a single 2-core machine; the LLM drafter latencies come from a different machine over Groq's public API. There are still no production users and no company data.
 
 ## Why
 Agents fail quietly: a tool times out, a schema drifts, a model refuses, and the reply still goes out. This project builds the agent **and the system that watches it**:
@@ -129,6 +129,24 @@ Two of the five "misses" did not actually change behaviour; the other three are 
 ### 5. Streaming through the full stack
 50 runs through Python → TypeScript gateway → GraphQL subscription arrived **complete and in order (50 of 50)**. First step p50 22 ms (p95 30 ms); final step p50 64 ms (p95 178 ms). This was a local test with one uvicorn worker, the gateway and the client on one 2-core VM (`reports/e2e_stream.json`).
 
+## LLM drafter
+
+`ARC_DRAFTER=groq` swaps the extractive drafter for `openai/gpt-oss-20b` on Groq (fallback `openai/gpt-oss-120b`). The default stays extractive. The prompt carries the retrieved KB article and the top-3 past answers, and tells the model not to invent facts, not to claim an action is already done, and not to refuse. Each call has a timeout, retry with backoff and a fallback model, inside an 18 s budget. If Groq fails completely the draft step errors, the gate escalates, and nothing is auto-sent. The refusal guard was widened because real models write curly apostrophes and phrasings the old regex never saw: it missed all 7 realistic refusals I tried, the new one catches all 7, and it flags none of the 16,335 historical answers, so the numbers above are unchanged.
+
+Measured on 50 tickets (fixed seed 2026, grouped held-out split, guards on, one pass, nothing tuned on them). Full tables: [`reports/llm_drafter.md`](reports/llm_drafter.md), [`reports/llm_drafter.json`](reports/llm_drafter.json).
+
+| | Extractive | Groq |
+|---|---:|---:|
+| Decisions (auto_send / needs_approval / escalate) | 5 / 45 / 0 | 5 / 45 / 0 |
+| Unsafe auto-sends | 1 | 1 |
+| Draft latency p50 / p95 | 0.0 / 0.1 ms | 4,449 / 7,786 ms |
+| Draft similarity to the historical answer | 0.127 | 0.148 |
+| Drafts with leftover placeholders | 13 | 0 |
+
+- **Provider behaviour:** 87 Groq calls, 37 returned HTTP 429, 36 retries, 1 fallback, 0 drafts failed completely, about 736 tokens per call. Runs with no retry had p50 488 ms (n=18); runs that retried had p50 5,540 ms (n=32). The 429s come from the key's 8,000 tokens-per-minute cap being exceeded by back-to-back runs.
+- **Faults:** 5 fault types x 20 runs against the Groq drafter: 100 of 100 escalated, 0 auto-sent, 0 crashed.
+- **Limits:** the gate does not read the draft, so both drafters get identical decisions, and the one unsafe auto-send is the same ticket for both (the existing priority-model miss). Reply quality was not judged by a human or an LLM; the similarity score is a weak proxy, and the regex checks found no completed-action claims and no invented URLs or phone numbers. No natural LLM refusal occurred in these 50 runs, so the refusal guard is validated on hand-written examples and mocks. Only 2 of the 5 fault types reach the LLM at all. 50 tickets and one pass is a small sample and Groq output is not deterministic.
+
 ## Run it
 
 ```bash
@@ -141,7 +159,7 @@ cd gateway && npm ci && npm start         # GraphQL on :4000  (npm test: Vitest 
 cd console && npm ci && npm run dev       # React console on :5173 (npm test: Vitest + Testing Library)
 ```
 
-The Groq drafter is in `arc/agent.py` (`GroqDrafter`): `pip install langchain-groq`, set `GROQ_API_KEY`, and pass it in `Components(...)`.
+The Groq drafter is in `arc/agent.py` (`GroqDrafter`): `pip install langchain-groq`, put `GROQ_API_KEY=...` in a git-ignored `.env`, and start the agent service with `ARC_DRAFTER=groq ARC_SMALL=1 uvicorn arc.api:app --port 8000`. `python scripts/llm_drafter_eval.py` regenerates the LLM drafter report (about 5 minutes, uses roughly 65k Groq tokens).
 
 ## Limitations
 - The tickets are likely synthetic, so the absolute routing numbers say more about this dataset than about real support queues.
@@ -151,7 +169,7 @@ The Groq drafter is in `arc/agent.py` (`GroqDrafter`): `pip install langchain-gr
 - Embeddings are offline LSA because model weights couldn't be downloaded here.
 
 ## Next
-Groq drafter with LLM-as-judge faithfulness and relevancy, compared against the extractive baseline. A priority-safe gate. A multi-seed recorded baseline for replay. Deploy (Render + Vercel). Multilingual routing (German rows are in the source data).
+LLM-as-judge faithfulness and relevancy for the Groq drafter (so far it is only measured on gate behaviour, latency and a similarity score). A priority-safe gate. A multi-seed recorded baseline for replay. Deploy (Render + Vercel). Multilingual routing (German rows are in the source data).
 
 ---
 <sub>**Stack:** Python, FastAPI, LangGraph, Chroma, scikit-learn, SQLite, Node.js, TypeScript, GraphQL (graphql-yoga, subscriptions over SSE), React, Vite, pytest, Vitest, GitHub Actions. Data: [Tobi-Bueck/customer-support-tickets](https://huggingface.co/datasets/Tobi-Bueck/customer-support-tickets) (CC BY-NC 4.0). Decisions: [`docs/decisions.md`](docs/decisions.md).</sub>
