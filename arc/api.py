@@ -17,7 +17,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
-from .agent import FAULTS, Agent, Components, ExtractiveDrafter, TraceStore, Version
+from .agent import FAULTS, Agent, Components, TraceStore, Version, make_drafter
 from .components import build_index, fit_classifier, load_kb, load_tickets, split
 
 STATE: dict = {}
@@ -30,7 +30,7 @@ def build_state(small: bool = False):
         tr = tr.sample(3000, random_state=0)
     router, _ = fit_classifier(tr["text"], tr["queue"], C=1.0)
     prio, _ = fit_classifier(tr["text"], tr["priority"], C=1.0)
-    comp = Components(router, prio, build_index(tr, load_kb(), name="api"), ExtractiveDrafter())
+    comp = Components(router, prio, build_index(tr, load_kb(), name="api"), make_drafter())
     store = TraceStore()
     store.db.execute("CREATE TABLE IF NOT EXISTS approvals(run_id TEXT PRIMARY KEY, approved INT, text TEXT, ts REAL)")
     return {"tickets": te.head(200).set_index("ticket_id"), "comp": comp, "store": store, "runs": {}, "lock": threading.Lock()}
