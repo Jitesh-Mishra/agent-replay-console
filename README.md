@@ -20,7 +20,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/console-run-dark.png">
-  <img alt="React console: ticket queue, live step trace (classify, retrieve, draft, approval gate), and approval panel holding a low-confidence reply for a human." src="docs/img/console-run-light.png">
+  <img alt="React console with the Groq drafter: demo ticket picker, live step trace with per-step latency and a Groq model badge on the draft step, and a plain-words gate verdict." src="docs/img/console-run-light.png">
 </picture>
 
 > **What this is and isn't.** Offline proof on a public ticket dataset (16,335 English tickets, CC BY-NC 4.0, likely synthetic). The headline results above use the **offline extractive baseline** drafter (it reuses the closest historical answers). A Groq LLM drafter is now wired in and measured on 50 tickets (see [LLM drafter](#llm-drafter)); that is a small, single-pass check, not an LLM quality evaluation. The non-LLM latencies are from a single 2-core machine; the LLM drafter latencies come from a different machine over Groq's public API. There are still no production users and no company data.
@@ -94,7 +94,7 @@ With guards on, every fault was detected and escalated, nothing was sent, and ev
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/console-fault-dark.png">
-  <img alt="Console with an injected LLM refusal: the draft step is flagged, the gate escalates, and the human starts from a blank reply." src="docs/img/console-fault-light.png">
+  <img alt="Console with an injected LLM refusal: the draft is labelled as an injected fault, the gate escalates in plain words, and the human starts from a blank reply." src="docs/img/console-fault-light.png">
 </picture>
 
 ### 4. Replay evaluation: would this change have shipped a regression?
@@ -131,7 +131,7 @@ Two of the five "misses" did not actually change behaviour; the other three are 
 
 ## LLM drafter
 
-`ARC_DRAFTER=groq` swaps the extractive drafter for `openai/gpt-oss-20b` on Groq (fallback `openai/gpt-oss-120b`). The default stays extractive. The prompt carries the retrieved KB article and the top-3 past answers, and tells the model not to invent facts, not to claim an action is already done, and not to refuse. Each call has a timeout, retry with backoff and a fallback model, inside an 18 s budget. If Groq fails completely the draft step errors, the gate escalates, and nothing is auto-sent. The refusal guard was widened because real models write curly apostrophes and phrasings the old regex never saw: it missed all 7 realistic refusals I tried, the new one catches all 7, and it flags none of the 16,335 historical answers, so the numbers above are unchanged.
+`ARC_DRAFTER=groq` swaps the extractive drafter for `openai/gpt-oss-20b` on Groq (fallback `openai/gpt-oss-120b`). The default stays extractive. The prompt carries the retrieved KB article and the top-3 past answers, and tells the model not to invent facts, not to claim an action is already done, and not to refuse. Each call has a timeout, retry with backoff and a fallback model, inside an 18 s budget. If Groq fails completely (wrong key, no network) the run still finishes: the extractive drafter writes a draft, the console says "Groq down: extractive fallback", and the gate escalates it with reason `drafter_fallback`, so a fallback draft is never auto-sent. A Groq failure was an escalation before this change and still is; only the reason text and the presence of a draft for the human differ, and `gate_decision` is untouched. The refusal guard was widened because real models write curly apostrophes and phrasings the old regex never saw: it missed all 7 realistic refusals I tried, the new one catches all 7, and it flags none of the 16,335 historical answers, so the numbers above are unchanged.
 
 Measured on 50 tickets (fixed seed 2026, grouped held-out split, guards on, one pass, nothing tuned on them). Full tables: [`reports/llm_drafter.md`](reports/llm_drafter.md), [`reports/llm_drafter.json`](reports/llm_drafter.json).
 
@@ -158,6 +158,8 @@ uvicorn arc.api:app --port 8000           # agent service (ARC_SMALL=1 for a fas
 cd gateway && npm ci && npm start         # GraphQL on :4000  (npm test: Vitest contract tests)
 cd console && npm ci && npm run dev       # React console on :5173 (npm test: Vitest + Testing Library)
 ```
+
+For a demo, `scripts/demo.sh` starts all three services with the Groq drafter (`.venv` required, `.env` holding `GROQ_API_KEY`) and prints http://localhost:5173; `scripts/demo_stop.sh` stops them. The console has a picker for four demo tickets (`console/src/demoTickets.json`: sends itself, held for a human, bad model reply caught, broken tool caught) and a toggle that injects a fault on the next run only. `python scripts/verify_demo.py` re-checks those four outcomes through the gateway (3 spaced runs each).
 
 The Groq drafter is in `arc/agent.py` (`GroqDrafter`): `pip install langchain-groq`, put `GROQ_API_KEY=...` in a git-ignored `.env`, and start the agent service with `ARC_DRAFTER=groq ARC_SMALL=1 uvicorn arc.api:app --port 8000`. `python scripts/llm_drafter_eval.py` regenerates the LLM drafter report (about 5 minutes, uses roughly 65k Groq tokens).
 
