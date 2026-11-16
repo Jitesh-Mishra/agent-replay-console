@@ -18,8 +18,28 @@ from .components import QUEUES, Index, search
 FAULTS = ("tool_timeout", "stale_schema", "malformed_tool_output", "empty_retrieval", "llm_refusal")
 # v0 matched any "I'm sorry", which flagged empathetic openers ("I'm sorry to hear...") in 0.6% of
 # historical answers and escalated 8 of 1,000 clean runs. Empathy phrases are now excluded.
+# v1 (this list) is kept only so reports can show the before/after of the real-LLM change below.
+REFUSAL_V1 = re.compile(r"\b(i'?m sorry,? but|i'?m sorry(?! to hear| for| about| that)|i cannot help|i can'?t help|"
+                        r"as an ai\b|i am unable to (help|assist))", re.I)
+# v2: real LLM refusals. Two gaps in v1: (a) it only matched a straight apostrophe, but models such as gpt-oss write
+# curly ones ("can\u2019t"), so "I can\u2019t help" slipped through; (b) it only knew the injected fault string, not
+# the other common phrasings ("I can't assist", "I'm unable to provide", "I must decline"). is_refusal() normalises
+# quotes first. Every added phrase was checked to match none of the 16,335 historical answers (see tests).
 REFUSAL = re.compile(r"\b(i'?m sorry,? but|i'?m sorry(?! to hear| for| about| that)|i cannot help|i can'?t help|"
-                     r"as an ai\b|i am unable to (help|assist))", re.I)
+                     r"as an ai\b|i am unable to (help|assist)|"
+                     r"i (cannot|can'?t|won'?t|will not) (assist|help|provide|comply|fulfill|do that)|"
+                     r"i'?m (not able|unable) to (help|assist|provide|comply)|i must decline|i'?m afraid i (cannot|can'?t)|"
+                     r"(sorry|apologi[sz]e),? (but )?i (cannot|can'?t))", re.I)
+_QUOTES = str.maketrans({"\u2019": "'", "\u2018": "'", "\u02bc": "'"})
+
+
+def is_refusal(text: str) -> bool:
+    return bool(REFUSAL.search(text.translate(_QUOTES)))
+
+
+def has_content(text: str) -> bool:
+    """False for empty, whitespace-only or punctuation-only replies ("...", "-", "\u2014"), which an LLM can return."""
+    return bool(re.search(r"\w", text))
 
 
 # ----------------------------------------------------------------------------- config / version
@@ -249,9 +269,9 @@ class Agent:
         if "llm_refusal" in ctx["faults"]:
             text = "I'm sorry, but I can't help with that request."
         if self.v.guards:
-            if REFUSAL.search(text):
+            if is_refusal(text):
                 flags.append("llm_refusal")
-            if not text.strip():
+            if not has_content(text):
                 flags.append("empty_draft")
         return {"draft": {"text": text}, "fault_flags": flags}
 
