@@ -86,7 +86,11 @@ class Components:
 
 # ----------------------------------------------------------------------------- drafter (pluggable LLM client)
 class Drafter:
-    """Interface: draft(ticket, hits, kb, rng, version) -> str."""
+    """Interface: draft(ticket, hits, kb, rng, version) -> str.
+    After each call, last_label says who wrote the draft (shown in the console) and last_fallback says whether a
+    fallback wrote it because the preferred drafter failed."""
+    last_label = "unknown"
+    last_fallback = False
 
     def draft(self, ticket, hits, kb, rng, v: Version) -> str:  # pragma: no cover
         raise NotImplementedError
@@ -95,6 +99,7 @@ class Drafter:
 class ExtractiveDrafter(Drafter):
     """Offline baseline used in the proof: samples one of the top-3 retrieved historical answers
     (softmax over similarity / temperature) and adds a KB pointer. No LLM involved."""
+    last_label = "extractive"
 
     def draft(self, ticket, hits, kb, rng, v: Version) -> str:
         sims = np.array([h["sim"] for h in hits])
@@ -233,6 +238,7 @@ class GroqDrafter(Drafter):
                         raise _Truncated(model)
                     text = resp.content if isinstance(resp.content, str) else ""
                     self.stats["ok" if mi == 0 else "ok_fallback"] += 1
+                    self.last_label = f"groq:{model}"
                     return text.strip()
                 except Exception as e:  # noqa: BLE001
                     last, kind = e, _kind(e)
@@ -254,6 +260,31 @@ class GroqDrafter(Drafter):
         raise DrafterError(f"groq drafter gave up: {type(last).__name__} {_status(last) or ''}".strip()) from last
 
 
+class FallbackDrafter(Drafter):
+    """Preferred drafter with an offline fallback (used for ARC_DRAFTER=groq).
+
+    If the preferred drafter raises DrafterError (Groq unreachable, wrong key, rate limited past its budget), the
+    extractive baseline writes the draft so the run still completes and a human has something to start from. The draft
+    node then adds a drafter_fallback flag, and any flag makes the gate escalate. The gate function itself is untouched:
+    a fallback draft can be escalated, never auto-sent."""
+
+    def __init__(self, primary: Drafter, fallback: Drafter):
+        self.primary, self.fallback = primary, fallback
+        self.last_label, self.last_fallback, self.last_error = primary.last_label, False, ""
+
+    def draft(self, ticket, hits, kb, rng, v: Version) -> str:
+        self.last_fallback, self.last_error = False, ""
+        try:
+            text = self.primary.draft(ticket, hits, kb, rng, v)
+            self.last_label = self.primary.last_label
+            return text
+        except DrafterError as e:
+            self.last_fallback, self.last_error = True, str(e)
+            text = self.fallback.draft(ticket, hits, kb, rng, v)
+            self.last_label = "fallback:" + self.fallback.last_label
+            return text
+
+
 def make_drafter(kind=None, load_env=True) -> Drafter:
     """ARC_DRAFTER=extractive (default) | groq. Reads .env from the repo root (python-dotenv) unless load_env=False."""
     if load_env:
@@ -266,7 +297,7 @@ def make_drafter(kind=None, load_env=True) -> Drafter:
     if kind == "extractive":
         return ExtractiveDrafter()
     if kind == "groq":
-        return GroqDrafter()
+        return FallbackDrafter(GroqDrafter(), ExtractiveDrafter())
     raise ValueError(f"ARC_DRAFTER must be 'extractive' or 'groq', got {kind!r}")
 
 
@@ -409,18 +440,23 @@ class Agent:
         r = s.get("retrieve", {})
         hits = r.get("hits") or []
         flags = list(s.get("fault_flags", []))
+        label, fell_back = "none (nothing retrieved)", False
         if not hits:
             text = ""          # nothing to ground on
         else:
-            text = self.c.drafter.draft(s["ticket"], hits, r.get("kb", []), ctx["rng"], self.v)
+            d = self.c.drafter
+            text = d.draft(s["ticket"], hits, r.get("kb", []), ctx["rng"], self.v)
+            label, fell_back = getattr(d, "last_label", "unknown"), bool(getattr(d, "last_fallback", False))
         if "llm_refusal" in ctx["faults"]:
             text = "I'm sorry, but I can't help with that request."
         if self.v.guards:
+            if fell_back:
+                flags.append("drafter_fallback")     # an offline-written draft is escalated for a human, never auto-sent
             if is_refusal(text):
                 flags.append("llm_refusal")
             if not has_content(text):
                 flags.append("empty_draft")
-        return {"draft": {"text": text}, "fault_flags": flags}
+        return {"draft": {"text": text, "drafter": label}, "fault_flags": flags}
 
     def _gate(self, s: State, ctx):
         d, why = gate_decision(s.get("classify", {}), s.get("retrieve", {}), s.get("draft", {}), self.v,

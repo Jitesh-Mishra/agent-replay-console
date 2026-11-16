@@ -92,7 +92,7 @@ def collect(ckpt: Path, budget: float):
             done[r["key"]] = r
     comp, sample, sim, n_train = build()
     log(f"built (train {n_train}); {len(done)} runs already in checkpoint")
-    groq = make_drafter("groq")
+    groq = make_drafter("groq").primary          # the measurement is of Groq itself, without the offline fallback
     agents = {}
     for d, drafter in (("groq", groq), ("extractive", ExtractiveDrafter())):
         store = TraceStore()

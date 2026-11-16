@@ -8,8 +8,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from arc.agent import (REFUSAL_V1, Agent, Components, DrafterError, ExtractiveDrafter, GroqDrafter,  # noqa: E402
-                       TraceStore, Version, has_content, is_refusal, make_drafter, reconstruct)
+from arc.agent import (REFUSAL_V1, Agent, Components, DrafterError, ExtractiveDrafter, FallbackDrafter,  # noqa: E402
+                       GroqDrafter, TraceStore, Version, has_content, is_refusal, make_drafter, reconstruct)
 from arc.components import ROOT, build_index, fit_classifier, load_kb, load_tickets, split  # noqa: E402
 
 
@@ -81,7 +81,8 @@ def test_switch_defaults_to_extractive_and_selects_groq(monkeypatch):
     with pytest.raises(RuntimeError, match="GROQ_API_KEY"):          # fails at startup, not on every ticket
         make_drafter(load_env=False)
     monkeypatch.setenv("GROQ_API_KEY", "test-key-not-real")
-    assert isinstance(make_drafter(load_env=False), GroqDrafter)      # building it makes no network call
+    d = make_drafter(load_env=False)                                    # building it makes no network call
+    assert isinstance(d, FallbackDrafter) and isinstance(d.primary, GroqDrafter) and isinstance(d.fallback, ExtractiveDrafter)
     monkeypatch.setenv("ARC_DRAFTER", "gpt5")
     with pytest.raises(ValueError, match="ARC_DRAFTER"):
         make_drafter(load_env=False)
@@ -194,3 +195,41 @@ def test_empty_llm_reply_is_escalated_end_to_end(setup, text):
 def test_non_string_content_does_not_slip_through(setup):
     _, _, r = run_with(setup, drafter(FakeLLM(Resp(None))))        # SDK returned no text at all
     assert r["decision"] == "escalate" and not r["outbox"]
+
+
+# ----------------------------------------------------------------------------- offline fallback (Groq down / wrong key)
+def with_fallback(llm):
+    return FallbackDrafter(drafter(llm), ExtractiveDrafter())
+
+
+def draft_of(store, r):
+    return store.steps_for(r["run_id"])[2]["output"]["draft"]
+
+
+def test_working_groq_is_labelled_and_not_flagged(setup):
+    _, store, r = run_with(setup, with_fallback(FakeLLM(GOOD)))
+    assert draft_of(store, r)["drafter"] == "groq:primary" and r["decision"] == "auto_send"
+    assert "drafter_fallback" not in r["reason"]
+
+
+@pytest.mark.parametrize("err", [ProviderError(401), ProviderError(503), ConnectionError("offline"), TimeoutError("slow")])
+def test_groq_failure_falls_back_to_extractive_and_is_escalated_not_sent(setup, err):
+    agent, store, r = run_with(setup, with_fallback(FakeLLM(err)))     # OPEN_GATE: a clean draft would auto-send
+    d = draft_of(store, r)
+    assert d["drafter"] == "fallback:extractive" and d["text"].strip()  # the run completed with a real draft
+    assert r["decision"] == "escalate" and r["reason"] == "fault:drafter_fallback"
+    assert not r["outbox"]                                              # never auto-sent
+    assert [s["node"] for s in store.steps_for(r["run_id"])] == ["classify", "retrieve", "draft", "gate"]
+    assert reconstruct(store, r["run_id"], agent.v)
+
+
+def test_extractive_is_labelled(setup):
+    comp, tickets = setup
+    store = TraceStore()
+    r = Agent(comp, OPEN_GATE, store).run(tickets[0], seed=1)
+    assert draft_of(store, r)["drafter"] == "extractive" and r["decision"] == "auto_send"
+
+
+def test_nothing_retrieved_has_no_drafter(setup):
+    _, store, r = run_with(setup, with_fallback(FakeLLM(GOOD)), faults=["empty_retrieval"])
+    assert draft_of(store, r)["drafter"].startswith("none") and r["decision"] == "escalate"
