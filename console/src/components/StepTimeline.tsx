@@ -1,11 +1,13 @@
-import { summarize } from "../summary";
+import { decisionCode, drafterOf, formatMs, summarize } from "../summary";
 import type { Step } from "../types";
+import { DrafterBadge } from "./DrafterBadge";
 
 const LABEL: Record<string, string> = {
   classify: "Classify", retrieve: "Retrieve", draft: "Draft", gate: "Approval gate", end: "Run finished",
 };
 
 export function StepTimeline({ steps, running }: { steps: Step[]; running: boolean }) {
+  const drafter = drafterOf(steps);
   return (
     <section className="panel timeline" aria-label="Live agent steps">
       <h2>Live trace {running && <span className="live">● streaming</span>}</h2>
@@ -16,9 +18,11 @@ export function StepTimeline({ steps, running }: { steps: Step[]; running: boole
             <div className="step-head">
               <span className="node">{LABEL[s.node] ?? s.node}</span>
               <span className={`pill st-${s.status}`}>{s.status}</span>
-              {s.node !== "end" && <span className="muted mono">{s.latencyMs.toFixed(1)} ms</span>}
+              {s.node === "draft" && <DrafterBadge label={drafter} />}
+              {s.node !== "end" && <span className="latency mono" aria-label="step latency">{formatMs(s.latencyMs)}</span>}
             </div>
             <p className="summary">{summarize(s)}</p>
+            {decisionCode(s) && <p className="code mono muted">{decisionCode(s)}</p>}
           </li>
         ))}
       </ol>

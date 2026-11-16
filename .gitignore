@@ -5,7 +5,7 @@ node_modules/
 dist/
 .env
 *.sqlite
-.venv/
+.venv
 .demo/
 .DS_Store
 *.log

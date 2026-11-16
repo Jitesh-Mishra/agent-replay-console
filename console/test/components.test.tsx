@@ -5,8 +5,9 @@ import { StepTimeline } from "../src/components/StepTimeline";
 import { summarize } from "../src/summary";
 import type { Step } from "../src/types";
 
+let seq = 0;
 const step = (node: string, detail: object, status = "ok"): Step =>
-  ({ runId: "r", seq: node.length, node, status, detail: JSON.stringify(detail), latencyMs: 3.2 });
+  ({ runId: "r", seq: ++seq, node, status, detail: JSON.stringify(detail), latencyMs: 3.2 });
 
 describe("StepTimeline", () => {
   it("renders each streamed step with a readable summary", () => {

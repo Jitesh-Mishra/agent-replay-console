@@ -2,8 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { gql, subscribeRun } from "./api";
 import { ApprovalPanel, type Outcome } from "./components/ApprovalPanel";
 import { StepTimeline } from "./components/StepTimeline";
+import { DemoPicker } from "./components/DemoPicker";
+import { FaultToggle } from "./components/FaultToggle";
 import { TicketQueue } from "./components/TicketQueue";
-import { FAULTS, type Fault, type Step, type Ticket } from "./types";
+import demos from "./demoTickets.json";
+import { drafterOf } from "./summary";
+import type { Demo, Fault, Step, Ticket } from "./types";
 
 export default function App() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -17,7 +21,7 @@ export default function App() {
   const unsub = useRef<() => void>();
 
   useEffect(() => {
-    gql<{ tickets: Ticket[] }>("{ tickets(limit: 25) { id subject body queue priority } }")
+    gql<{ tickets: Ticket[] }>("{ tickets(limit: 200) { id subject body queue priority } }")
       .then((d) => setTickets(d.tickets)).catch((e) => setError(String(e)));
     return () => unsub.current?.();
   }, []);
@@ -30,6 +34,7 @@ export default function App() {
       const { startRun } = await gql<{ startRun: string }>(
         "mutation($t: ID!, $f: [Fault!]) { startRun(ticketId: $t, faults: $f) }", { t: ticket.id, f: faults });
       setRunId(startRun);
+      setFaults([]);               // a fault applies to this run only
       unsub.current = subscribeRun(startRun, (s) => {
         setSteps((prev) => [...prev, s]);
         if (s.node === "end") setRunning(false);
@@ -43,6 +48,11 @@ export default function App() {
     setDecided(true);
   }
 
+  function pickDemo(d: Demo, t: Ticket) {
+    unsub.current?.();
+    setTicket(t); setFaults(d.fault ? [d.fault] : []); setSteps([]); setRunId(undefined); setDecided(false); setRunning(false);
+  }
+
   const end = steps.find((s) => s.node === "end");
   const outcome: Outcome | undefined = end ? JSON.parse(end.detail) : undefined;
 
@@ -53,29 +63,21 @@ export default function App() {
         <p className="muted">Support-ticket agent · every step traced, streamed live, and gated before anything is sent</p>
       </header>
       {error && <p className="bad banner">{error}</p>}
+      <DemoPicker demos={demos as Demo[]} tickets={tickets} activeId={ticket?.id} onPick={pickDemo} />
       <main>
-        <TicketQueue tickets={tickets} selected={ticket?.id} onSelect={(t) => { setTicket(t); setSteps([]); setRunId(undefined); }} />
+        <TicketQueue tickets={tickets.slice(0, 25)} selected={ticket?.id} onSelect={(t) => { setTicket(t); setSteps([]); setRunId(undefined); }} />
         <div className="center">
           {ticket && (
             <section className="panel ticket-view">
               <h2>{ticket.subject || "(no subject)"}</h2>
               <p className="body">{ticket.body}</p>
-              <fieldset className="faults">
-                <legend>Inject faults (demo)</legend>
-                {FAULTS.map((f) => (
-                  <label key={f}>
-                    <input type="checkbox" checked={faults.includes(f)}
-                      onChange={(e) => setFaults(e.target.checked ? [...faults, f] : faults.filter((x) => x !== f))} />
-                    {f.replaceAll("_", " ")}
-                  </label>
-                ))}
-              </fieldset>
+              <FaultToggle faults={faults} onChange={setFaults} />
               <button className="primary" onClick={run} disabled={running}>{running ? "Running…" : "Run agent"}</button>
             </section>
           )}
           <StepTimeline steps={steps} running={running} />
         </div>
-        <ApprovalPanel outcome={outcome} onDecide={decide} decided={decided} />
+        <ApprovalPanel outcome={outcome} onDecide={decide} decided={decided} drafter={drafterOf(steps)} />
       </main>
     </div>
   );
