@@ -1,0 +1,6 @@
+[
+  {"id": "T00648", "label": "1. Sends itself", "shows": "Clean run: every check passes, so the reply goes out automatically", "fault": null, "expect": "auto_send"},
+  {"id": "T00087", "label": "2. Held for a human", "shows": "Routing confidence is low, so the draft waits for approval", "fault": null, "expect": "needs_approval"},
+  {"id": "T00024", "label": "3. Bad model reply caught", "shows": "Injected LLM refusal: the guard catches it and escalates", "fault": "llm_refusal", "expect": "escalate"},
+  {"id": "T00191", "label": "4. Broken tool caught", "shows": "Injected retrieval timeout: escalates instead of guessing", "fault": "tool_timeout", "expect": "escalate"}
+]
