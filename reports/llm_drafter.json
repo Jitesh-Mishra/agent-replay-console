@@ -1,0 +1,1314 @@
+{
+  "meta": {
+    "generated_utc": "2026-11-16T21:11:53+00:00",
+    "sample": {
+      "n": 50,
+      "seed": 2026,
+      "from": "grouped held-out test split (arc.components.split)",
+      "n_train_for_router_and_index": 13067
+    },
+    "models": [
+      "openai/gpt-oss-20b",
+      "openai/gpt-oss-120b"
+    ],
+    "temperature": 0.3,
+    "reasoning_effort": "low (gpt-oss models)",
+    "system_prompt_sha256": "033fa557418d8232",
+    "guards": true,
+    "gate_policy": "Version() defaults (conf 0.6, grounding 0.5, high priority needs a human)",
+    "python": "3.13.16",
+    "run": "single pass, no retries of the experiment, nothing tuned on this sample",
+    "fault_runs_per_type": 20
+  },
+  "clean_50_tickets": {
+    "extractive": {
+      "n": 50,
+      "decisions": {
+        "auto_send": 5,
+        "needs_approval": 45,
+        "escalate": 0,
+        "crashed": 0
+      },
+      "flags": {},
+      "route_accuracy": 0.4,
+      "auto_sent_wrong_route_or_high_priority": 1,
+      "policy_violations": 0,
+      "unsafe_auto_sends": 1,
+      "draft_latency_ms": {
+        "p50": 0.04966701089870185,
+        "p95": 0.07580830861115827,
+        "max": 0.2879589737858623
+      },
+      "draft_quality_vs_historical_answer": 0.12688389447324033,
+      "mean_draft_chars": 387.12,
+      "drafts_with_placeholder": 13,
+      "drafts_claiming_completed_action_heuristic": 0,
+      "drafts_with_url_or_phone_heuristic": 1,
+      "trace_reconstruct_rate": 1.0,
+      "all_runs_streamed_4_steps": true
+    },
+    "groq": {
+      "n": 50,
+      "decisions": {
+        "auto_send": 5,
+        "needs_approval": 45,
+        "escalate": 0,
+        "crashed": 0
+      },
+      "flags": {},
+      "route_accuracy": 0.4,
+      "auto_sent_wrong_route_or_high_priority": 1,
+      "policy_violations": 0,
+      "unsafe_auto_sends": 1,
+      "draft_latency_ms": {
+        "p50": 4449.044751992915,
+        "p95": 7785.919942958567,
+        "max": 8656.633712991606
+      },
+      "draft_quality_vs_historical_answer": 0.14758855704863552,
+      "mean_draft_chars": 554.46,
+      "drafts_with_placeholder": 0,
+      "drafts_claiming_completed_action_heuristic": 0,
+      "drafts_with_url_or_phone_heuristic": 0,
+      "trace_reconstruct_rate": 1.0,
+      "all_runs_streamed_4_steps": true
+    }
+  },
+  "groq_provider": {
+    "api_calls": 87,
+    "ok_primary": 49,
+    "ok_after_fallback": 1,
+    "errors": 37,
+    "retries": 36,
+    "fallbacks": 1,
+    "drafts_failed_completely": 0,
+    "truncated_replies": 0,
+    "error_codes": {
+      "429": 37
+    },
+    "prompt_tokens": 30037,
+    "completion_tokens": 6761,
+    "approx_tokens_per_successful_call": 735.96
+  },
+  "groq_latency_split": {
+    "no_retry": {
+      "n": 18,
+      "p50": 487.58597949927207,
+      "p95": 1168.1253465329041
+    },
+    "with_retry": {
+      "n": 32,
+      "p50": 5539.974606508622,
+      "p95": 8580.820137160481
+    }
+  },
+  "groq_faults": [
+    {
+      "fault": "tool_timeout",
+      "n": 20,
+      "escalated": 20,
+      "auto_sent_while_faulty": 0,
+      "crashed": 0,
+      "needs_approval": 0,
+      "detected_flag": 1.0,
+      "runs_that_called_groq": 0,
+      "groq_api_calls": 0,
+      "all_runs_streamed_4_steps": true,
+      "trace_reconstruct_rate": 1.0
+    },
+    {
+      "fault": "stale_schema",
+      "n": 20,
+      "escalated": 20,
+      "auto_sent_while_faulty": 0,
+      "crashed": 0,
+      "needs_approval": 0,
+      "detected_flag": 1.0,
+      "runs_that_called_groq": 20,
+      "groq_api_calls": 40,
+      "all_runs_streamed_4_steps": true,
+      "trace_reconstruct_rate": 1.0
+    },
+    {
+      "fault": "malformed_tool_output",
+      "n": 20,
+      "escalated": 20,
+      "auto_sent_while_faulty": 0,
+      "crashed": 0,
+      "needs_approval": 0,
+      "detected_flag": 1.0,
+      "runs_that_called_groq": 0,
+      "groq_api_calls": 0,
+      "all_runs_streamed_4_steps": true,
+      "trace_reconstruct_rate": 1.0
+    },
+    {
+      "fault": "empty_retrieval",
+      "n": 20,
+      "escalated": 20,
+      "auto_sent_while_faulty": 0,
+      "crashed": 0,
+      "needs_approval": 0,
+      "detected_flag": 1.0,
+      "runs_that_called_groq": 0,
+      "groq_api_calls": 0,
+      "all_runs_streamed_4_steps": true,
+      "trace_reconstruct_rate": 1.0
+    },
+    {
+      "fault": "llm_refusal",
+      "n": 20,
+      "escalated": 20,
+      "auto_sent_while_faulty": 0,
+      "crashed": 0,
+      "needs_approval": 0,
+      "detected_flag": 1.0,
+      "runs_that_called_groq": 20,
+      "groq_api_calls": 42,
+      "all_runs_streamed_4_steps": true,
+      "trace_reconstruct_rate": 1.0
+    }
+  ],
+  "groq_faults_provider": {
+    "api_calls": 82,
+    "ok_primary": 40,
+    "ok_after_fallback": 0,
+    "errors": 42,
+    "retries": 42,
+    "fallbacks": 0,
+    "drafts_failed_completely": 0,
+    "truncated_replies": 0,
+    "error_codes": {
+      "429": 42
+    },
+    "prompt_tokens": 24310,
+    "completion_tokens": 5471,
+    "approx_tokens_per_successful_call": 744.525
+  },
+  "guard_before_after": [
+    {
+      "text": "I can\u2019t help with that.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "I\u2019m sorry, but I can\u2019t assist with that request.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "I can't assist with this.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "I'm unable to provide that information.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "I\u2019m not able to help with this request.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "I must decline to answer.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "Sorry, I can\u2019t do that.",
+      "is_refusal": true,
+      "v1_flags": false,
+      "v2_flags": true
+    },
+    {
+      "text": "I'm sorry to hear about the outage. We are on it.",
+      "is_refusal": false,
+      "v1_flags": false,
+      "v2_flags": false
+    },
+    {
+      "text": "I'm sorry for the inconvenience.",
+      "is_refusal": false,
+      "v1_flags": false,
+      "v2_flags": false
+    }
+  ],
+  "examples": [
+    {
+      "ticket_id": "T14309",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "draft": "Thank you for reaching out. To help diagnose the underperformance of your digital campaigns, could you please provide:\n\n1. The specific software version(s) you are using and any recent updates applied.  \n2. The platforms or ad networks you are integrating with.  \n3. Any error messages or logs that appear during integration or campaign launch.  \n\nOnce we have this information, we can guide you through the next steps to resolve the issue.  \n\nCustomer Support Team"
+    },
+    {
+      "ticket_id": "T12981",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "draft": "Thank you for reaching out with your suggestion to enhance our data analytics tools. We are currently reviewing the tools to identify areas for improvement and would appreciate more details about the specific features you would like to see enhanced. Could you share the challenges you\u2019re facing and the outcomes you expect? Once we have that information, we can schedule a call to discuss the next steps.  \n\nCustomer Support Team"
+    },
+    {
+      "ticket_id": "T06863",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "draft": "Thank you for reaching out. To provide you with the most accurate information about how our SaaS solution integrates with Google\u202fMeet and Schoology, could you please let us know:\n\n1. Which specific features you\u2019re looking to enable (e.g., scheduling, joining, recording, assignment creation, grading, etc.)?  \n2. Are you currently using any other tools that need to sync with Google\u202fMeet or Schoology?\n\nOnce we have these details, we\u2019ll outline the integration capabilities and next steps for implementation.  \n\nCustomer Support Team"
+    }
+  ],
+  "flagged_groq_drafts": [],
+  "per_run_groq": [
+    {
+      "ticket_id": "T14309",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 439.25820899312384,
+      "draft_chars": 465,
+      "quality": 0.1027945355149633,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 616,
+        "completion_tokens": 109,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T12981",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 2546.2906259926967,
+      "draft_chars": 429,
+      "quality": 0.1479141957694808,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 593,
+        "completion_tokens": 96,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T06863",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 601.0834170156159,
+      "draft_chars": 533,
+      "quality": 0.31191788832312606,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 514,
+        "completion_tokens": 137,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T12391",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 433.1750420096796,
+      "draft_chars": 557,
+      "quality": 0.22429604722849733,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 660,
+        "completion_tokens": 117,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T08463",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 412.86512502119876,
+      "draft_chars": 538,
+      "quality": 0.1416612926164999,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 680,
+        "completion_tokens": 120,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T02732",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 329.1028749954421,
+      "draft_chars": 486,
+      "quality": 0.11089053112548782,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 552,
+        "completion_tokens": 116,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T05172",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 472.88708298583515,
+      "draft_chars": 514,
+      "quality": 0.15013317662505757,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 598,
+        "completion_tokens": 116,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T13610",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 795.5302089976612,
+      "draft_chars": 464,
+      "quality": 0.13315508128386755,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 652,
+        "completion_tokens": 109,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T05784",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 489.4525420095306,
+      "draft_chars": 464,
+      "quality": 0.1626713334408404,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 550,
+        "completion_tokens": 111,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T00461",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 492.15291699511,
+      "draft_chars": 495,
+      "quality": 0.27343160188834487,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 701,
+        "completion_tokens": 121,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T06786",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 281.8468750047032,
+      "draft_chars": 325,
+      "quality": 0.008655964387864548,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 487,
+        "completion_tokens": 77,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T10985",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 848.9413750066888,
+      "draft_chars": 1379,
+      "quality": 0.10734773077632982,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 589,
+        "completion_tokens": 313,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T05102",
+      "decision": "auto_send",
+      "reason": "all_checks_passed",
+      "flags": [],
+      "draft_ms": 642.7129170042463,
+      "draft_chars": 634,
+      "quality": 0.19634395525591056,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 715,
+        "completion_tokens": 169,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T14352",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 1700.6482500000857,
+      "draft_chars": 547,
+      "quality": 0.23846273506377583,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 565,
+        "completion_tokens": 126,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T09845",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 6549.486544972751,
+      "draft_chars": 366,
+      "quality": 0.03806764848780553,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 724,
+        "completion_tokens": 84,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T14131",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 4502.120460005244,
+      "draft_chars": 518,
+      "quality": 0.09207395933790885,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 461,
+        "completion_tokens": 139,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T00412",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 5685.077586007537,
+      "draft_chars": 499,
+      "quality": 0.16425926970486354,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 689,
+        "completion_tokens": 119,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T02197",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 4660.255961003713,
+      "draft_chars": 369,
+      "quality": 0.24852468734182534,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 521,
+        "completion_tokens": 122,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T10150",
+      "decision": "auto_send",
+      "reason": "all_checks_passed",
+      "flags": [],
+      "draft_ms": 5420.028585998807,
+      "draft_chars": 513,
+      "quality": 0.20032727260946437,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 609,
+        "completion_tokens": 112,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T01237",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 6669.430670008296,
+      "draft_chars": 532,
+      "quality": 0.0661054694082335,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 679,
+        "completion_tokens": 126,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T00372",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 8656.633712991606,
+      "draft_chars": 471,
+      "quality": 0.13063667841216517,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 3,
+        "prompt_tokens": 676,
+        "completion_tokens": 126,
+        "ok": 1,
+        "errors": 2,
+        "error_429": 2,
+        "retries": 2
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T05438",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority,weak_grounding",
+      "flags": [],
+      "draft_ms": 4395.969043980585,
+      "draft_chars": 455,
+      "quality": 0.11595088294691058,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 537,
+        "completion_tokens": 114,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T10379",
+      "decision": "auto_send",
+      "reason": "all_checks_passed",
+      "flags": [],
+      "draft_ms": 5677.042627998162,
+      "draft_chars": 323,
+      "quality": 0.13708074148864488,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 689,
+        "completion_tokens": 80,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T16250",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 2546.3560430216603,
+      "draft_chars": 690,
+      "quality": 0.22696444795584142,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 545,
+        "completion_tokens": 191,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T01732",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 5514.910336001776,
+      "draft_chars": 571,
+      "quality": 0.24847509344344015,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 572,
+        "completion_tokens": 133,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T08952",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 5764.921002992196,
+      "draft_chars": 969,
+      "quality": 0.08183386708075184,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 523,
+        "completion_tokens": 232,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T04637",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 5565.038877015468,
+      "draft_chars": 546,
+      "quality": 0.1814511060538544,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 662,
+        "completion_tokens": 169,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T06802",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 8525.829837017227,
+      "draft_chars": 546,
+      "quality": 0.15300365935269644,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 4,
+        "prompt_tokens": 513,
+        "completion_tokens": 149,
+        "errors": 3,
+        "error_429": 3,
+        "retries": 2,
+        "fallbacks": 1,
+        "ok_fallback": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T14567",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 642.3106250003912,
+      "draft_chars": 560,
+      "quality": 0.09545187270780008,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 711,
+        "completion_tokens": 141,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T08583",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 4586.336209991714,
+      "draft_chars": 715,
+      "quality": 0.14005064463968622,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 409,
+        "completion_tokens": 167,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T16332",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 5457.490169006633,
+      "draft_chars": 510,
+      "quality": 0.1666295566764451,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 566,
+        "completion_tokens": 133,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T06848",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 3754.825793002965,
+      "draft_chars": 721,
+      "quality": 0.1943958436579409,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 669,
+        "completion_tokens": 228,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T02043",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 6802.448128000833,
+      "draft_chars": 514,
+      "quality": 0.04109720399295834,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 607,
+        "completion_tokens": 120,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T15918",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 3478.451167989988,
+      "draft_chars": 291,
+      "quality": 0.10405770249458554,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 461,
+        "completion_tokens": 68,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T14324",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 6566.011670016451,
+      "draft_chars": 575,
+      "quality": 0.1768343779033368,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 699,
+        "completion_tokens": 128,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T12799",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 4946.19016899378,
+      "draft_chars": 335,
+      "quality": 0.05334260468059355,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 620,
+        "completion_tokens": 88,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T02382",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 924.9197089811787,
+      "draft_chars": 2134,
+      "quality": 0.08991604585513646,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 706,
+        "completion_tokens": 474,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T02528",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 483.60241699265316,
+      "draft_chars": 520,
+      "quality": 0.2872106881389712,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 703,
+        "completion_tokens": 120,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T11421",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 485.71941698901355,
+      "draft_chars": 534,
+      "quality": 0.10468518434184677,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 420,
+        "completion_tokens": 122,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T09727",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 4650.43395999237,
+      "draft_chars": 539,
+      "quality": 0.09559749349614621,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 780,
+        "completion_tokens": 132,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T11991",
+      "decision": "auto_send",
+      "reason": "all_checks_passed",
+      "flags": [],
+      "draft_ms": 6881.585627997993,
+      "draft_chars": 412,
+      "quality": 0.06012544945995389,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 620,
+        "completion_tokens": 100,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T07476",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 393.3008750027511,
+      "draft_chars": 503,
+      "quality": 0.12659347647019392,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 1,
+        "prompt_tokens": 486,
+        "completion_tokens": 123,
+        "ok": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T01297",
+      "decision": "auto_send",
+      "reason": "all_checks_passed",
+      "flags": [],
+      "draft_ms": 6620.25933698169,
+      "draft_chars": 301,
+      "quality": 0.1657603004963783,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 638,
+        "completion_tokens": 78,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T10186",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 6144.471920008073,
+      "draft_chars": 307,
+      "quality": 0.1492505944387071,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 3,
+        "prompt_tokens": 461,
+        "completion_tokens": 90,
+        "ok": 1,
+        "errors": 2,
+        "error_429": 2,
+        "retries": 2
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T15975",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 3951.4183349965606,
+      "draft_chars": 415,
+      "quality": 0.19282251386722346,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 714,
+        "completion_tokens": 108,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T13117",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 4624.681001994759,
+      "draft_chars": 505,
+      "quality": 0.1432202557717928,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 517,
+        "completion_tokens": 119,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T05539",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 5773.204002005514,
+      "draft_chars": 502,
+      "quality": 0.038076199108641275,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 601,
+        "completion_tokens": 125,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T14902",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 3426.0705019987654,
+      "draft_chars": 491,
+      "quality": 0.2559156693856597,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 469,
+        "completion_tokens": 113,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T01278",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence,high_priority",
+      "flags": [],
+      "draft_ms": 6464.870210998924,
+      "draft_chars": 542,
+      "quality": 0.10937093132505483,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 2,
+        "prompt_tokens": 673,
+        "completion_tokens": 115,
+        "ok": 1,
+        "errors": 1,
+        "error_429": 1,
+        "retries": 1
+      },
+      "draft_error": null
+    },
+    {
+      "ticket_id": "T01802",
+      "decision": "needs_approval",
+      "reason": "low_route_confidence",
+      "flags": [],
+      "draft_ms": 8648.030504002236,
+      "draft_chars": 599,
+      "quality": 0.1945923905982723,
+      "placeholder": false,
+      "done_claim": false,
+      "url_or_phone": false,
+      "stats": {
+        "calls": 3,
+        "prompt_tokens": 635,
+        "completion_tokens": 136,
+        "ok": 1,
+        "errors": 2,
+        "error_429": 2,
+        "retries": 2
+      },
+      "draft_error": null
+    }
+  ]
+}
